@@ -24,7 +24,7 @@ typedef struct EdgeList {
     int total_edges;
 } EdgeList;
 
-int Graph[MAX][MAX];
+int **Graph;
 
 
 int find(int *array, int node1) {
@@ -111,8 +111,10 @@ void pretty_print(EdgeList span_list) {
 int main(int argc, char *argv[]) {
     int num;
     int i, j, total_cost;
+    **Graph = (int*) realloc(Graph, MAX*sizeof(int));
     #pragma omp parallel
     for (i = 0; i < MAX; i++) {
+        *Graph[i] = (int*) malloc(MAX*sizeof(int));
         for (j = 0; j < MAX; j++) {
             num = 1 + (rand() % 10);
             Graph[i][j] = num;
