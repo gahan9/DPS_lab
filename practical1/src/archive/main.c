@@ -43,9 +43,10 @@ void _union(int array[], int number_of_nodes, int node1, int node2) {
 
 void sort(EdgeList edge_list) {
     Edge temp;
+    int j;
+    #pragma omp parallel for num_threads(100) private(j)
     for (int i = 1; i < edge_list.total_edges; i++) {
-        // #pragma omp parallel for
-        for (int j = 0; j < edge_list.total_edges - 1; j++)
+        for (j = 0; j < edge_list.total_edges - 1; j++)
             if (edge_list.data[j].weight > edge_list.data[j + 1].weight) {
                 temp = edge_list.data[j];
                 edge_list.data[j] = edge_list.data[j + 1];
