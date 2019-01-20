@@ -16,16 +16,15 @@
 
 #define ARRAY_SIZE 100000000
 #define REPEAT     10
-
+#define NUM_THREADS 4
 
 void vector_add(double* vector1, double* vector2, double* result) {
-    int size_chunks = ARRAY_SIZE/omp_get_max_threads();
+    int i;
     #pragma omp parallel
 	{
-        // for(int i=size_chunks*omp_get_thread_num(); i < size_chunks*(omp_get_thread_num()+1); i++)
-        #pragma omp parallel for
-        for (int i=0; i < ARRAY_SIZE; i++){
-            result[i] = vector1[i] + vector2[i];
+        #pragma omp parallel for num_threads(NUM_THREADS) private(i)
+        for (i=0; i < ARRAY_SIZE; i+=NUM_THREADS){
+            result[i*omp_get_thread_num()] = vector1[i*omp_get_thread_num()] + vector2[i*omp_get_thread_num()];
         }
     }
 }
@@ -65,21 +64,19 @@ int main() {
 
 	// Double check vector_add is correct
 	if(!verify(vector1, vector2)) {
-		printf("vector_add does not match oracle\n");
+		printf("vector_add does not match actual result\n");
 		return 0;
 	}
 		
 	// Test framework that sweeps the number of threads and times each
     // runs for iteration REPEAT
 	double start_time, run_time;
-	int num_threads = omp_get_max_threads();	
-	for(int i=1; i<=num_threads; i++) {
-		omp_set_num_threads(i);		
-		start_time = omp_get_wtime();
-		for(int j=0; j<REPEAT; j++){
-			vector_add(vector1, vector2, result_vector);
-        }
-		run_time = omp_get_wtime() - start_time;
-  	printf(" %d thread(s) took %f seconds\n",i,run_time);
-	}
+    start_time = omp_get_wtime();
+
+    for(int j=0; j<REPEAT; j++){
+        vector_add(vector1, vector2, result_vector);
+    }
+    run_time = omp_get_wtime() - start_time;
+  	printf(" %d thread(s) took %f seconds\n",NUM_THREADS,run_time);
+
 }
