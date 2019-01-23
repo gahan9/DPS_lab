@@ -15,16 +15,17 @@
 #include <omp.h>
 
 #define ARRAY_SIZE 100000000
-#define REPEAT     10
+#define REPEAT     100
 #define NUM_THREADS 4
 
 void vector_add(double* vector1, double* vector2, double* result) {
     int i;
     #pragma omp parallel
 	{
-        #pragma omp parallel for num_threads(NUM_THREADS) private(i)
-        for (i=0; i < ARRAY_SIZE; i+=NUM_THREADS){
-            result[i*omp_get_thread_num()] = vector1[i*omp_get_thread_num()] + vector2[i*omp_get_thread_num()];
+        // #pragma omp parallel for num_threads(NUM_THREADS)
+        #pragma omp for
+        for (i=0; i < ARRAY_SIZE; i++){
+            result[i] = vector1[i] + vector2[i];
         }
     }
 }

@@ -14,8 +14,8 @@
 #include <stdbool.h>
 #include <omp.h>
 
-#define ARRAY_SIZE 100000000
-#define REPEAT     10
+#define ARRAY_SIZE 1000000000
+#define REPEAT     100
 
 
 void vector_add(double* vector1, double* vector2, double* result) {
