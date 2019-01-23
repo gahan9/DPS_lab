@@ -20,11 +20,13 @@
 
 void vector_add(double* vector1, double* vector2, double* result) {
     int i;
+	int size_chunks = ARRAY_SIZE/NUM_THREADS;
     #pragma omp parallel
 	{
         // #pragma omp parallel for num_threads(NUM_THREADS)
-        #pragma omp for
-        for (i=0; i < ARRAY_SIZE; i++){
+        // #pragma omp parallel for
+        // for (i=0; i < ARRAY_SIZE; i++){
+		for(int i=size_chunks*omp_get_thread_num(); i < size_chunks*(omp_get_thread_num()+1); i++){
             result[i] = vector1[i] + vector2[i];
         }
     }
