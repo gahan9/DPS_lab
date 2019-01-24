@@ -39,6 +39,9 @@
 \renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
 \usepackage{titlesec} % Allows customization of titles
 
+%Importing csv as table
+\usepackage{csvsimple}
+
 \usepackage{makecell}
 \usepackage{longtable}
 \renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
@@ -160,6 +163,17 @@ Steps:
 \inputminted{c}{../src/vectorAddParallel.c}
 
 \section{Analysis}
-\inputminted{text}{../src/observation.csv}
+Below is the result of observation over $ 100 $ iterations for various input size
+%\inputminted{text}{../src/observation.csv}
+\\
+
+
+\begin{tabular}{c | l | l | l | l | l}%
+	\bfseries data\_size ($ \log_{10} $) & \bfseries time\_seq & \bfseries time\_parallel\_1 & \bfseries time\_parallel\_2 & \bfseries speedup1 & \bfseries speedup2% specify table head
+	\csvreader[data\_size (log base 10) time\_seq time\_parallel\_1 time\_parallel\_2 speedup1 speedup2]{../src/observation.csv}{}% use head of csv as column names
+    {\\\hline\csvcoli&\csvcolii&\csvcoliii&\csvcoliv&\csvcolv&\csvcolvi}% specify your coloumns here
+
+\end{tabular}
 
 \end{document}
+
