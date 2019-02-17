@@ -193,11 +193,14 @@ Below is the result of observation over $ 100 $ iterations for various input siz
     \caption{Analysis of Time consumed by thread(s) for calculation of number of inputs (x-axis scaled to the log base 10)}
 \end{figure}
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{assets/speedup_graph.png}
     \caption{Comparison of speed up achieved from two method of parallelism}
 \end{figure}
+
+\section{Conclusion}
+To get the speedup accurately the data and graphs values are based on summation of 100 iterations and it's been observed that for very initial where input vector size is about $ 10^7 $ then observed amount of time with parallel implementation is affecting negligible enhancement, however as the input size increase afterwards overall speedup observed about $ 1.21 $.
 
 
 \end{document}
