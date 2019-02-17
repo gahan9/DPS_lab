@@ -167,13 +167,38 @@ Below is the result of observation over $ 100 $ iterations for various input siz
 %\inputminted{text}{../src/observation.csv}
 \\
 
-
 \begin{tabular}{c | l | l | l | l | l}%
-	\bfseries data\_size ($ \log_{10} $) & \bfseries time\_seq & \bfseries time\_parallel\_1 & \bfseries time\_parallel\_2 & \bfseries speedup1 & \bfseries speedup2% specify table head
-	\csvreader[data\_size (log base 10) time\_seq time\_parallel\_1 time\_parallel\_2 speedup1 speedup2]{../src/observation.csv}{}% use head of csv as column names
-    {\\\hline\csvcoli&\csvcolii&\csvcoliii&\csvcoliv&\csvcolv&\csvcolvi}% specify your coloumns here
-
+    	\bfseries Data size 
+    & \bfseries Sequential Time 
+    & \bfseries Parallel Time$_1 $ 
+    & \bfseries Parallel Time$_2 $ 
+    & \bfseries Speedup$_1 $ 
+    & \bfseries Speedup$_2 $% specify table head
+    
+%	\bfseries data\_size ($ \log_{10} $) & \bfseries time\_seq & \bfseries time\_parallel\_1 & \bfseries time\_parallel\_2 & \bfseries speedup1 & \bfseries speedup2% specify table head
+	\csvreader[data\_size\_log10 time\_seq time\_parallel\_1 time\_parallel\_2 speedup1 speedup2]{../src/observation.csv}{}% use head of csv as column names
+    {\\\hline
+        10^\csvcoli 
+        &\csvcolii
+        &\csvcoliii
+        &\csvcoliv
+        &\csvcolv
+        &\csvcolvi
+    }
 \end{tabular}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{assets/time_graph.png}
+    \caption{Analysis of Time consumed by thread(s) for calculation of number of inputs (x-axis scaled to the log base 10)}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\linewidth]{assets/speedup_graph.png}
+    \caption{Comparison of speed up achieved from two method of parallelism}
+\end{figure}
+
 
 \end{document}
 
