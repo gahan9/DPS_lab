@@ -1,3 +1,1 @@
-mpicc -o main main.c
-
-mpirun -np 10 -hosts jarvis,ultron ./main
+mpicc main.c -o main && mpirun -np 15 --hosts master,node ./main
