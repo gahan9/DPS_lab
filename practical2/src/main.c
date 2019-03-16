@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
     // currently used by MPI implementations, but are there in case future
     // implementations might need the arguments.
     MPI_Init(NULL, NULL);
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int name_len;
 
     // Get the number of processes
     int world_size;
@@ -32,7 +34,8 @@ int main(int argc, char** argv) {
         // printf("***I'm The master!! Kneel before your master***\n");
         // for detail refer http://mpitutorial.com/tutorials/mpi-broadcast-and-collective-communication/
         data = 100;
-        printf("[master-process:%d] broadcasting data %d\n", world_rank, data);
+        MPI_Get_processor_name(processor_name, &name_len);
+        printf("[%s-process:%d] broadcasting data %d\n", processor_name, world_rank, data);
         double start = MPI_Wtime();
         MPI_Bcast(
             &data,          // void* data               data variable
@@ -49,16 +52,16 @@ int main(int argc, char** argv) {
         double start = MPI_Wtime();
         MPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
         double end = MPI_Wtime();
-        printf("[node-process:%d] received data %d from root process\n", world_rank, data);
-        printf("[node-process:%d] Time Elapsed: %lf\n", world_rank, end - start);
+        MPI_Get_processor_name(processor_name, &name_len);
+        printf("[%s-process:%d] received data %d from master\n", processor_name, world_rank, data);
+        printf("[%s-process:%d] Time Elapsed: %lf\n", processor_name, world_rank, end - start);
     }
+    
     // Get the name of the processor
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
-    int name_len;
     MPI_Get_processor_name(processor_name, &name_len);
 
     // Task 1: print Computer machine name and rank id for each process.
-    printf("Gratitude!!! from %s, rank %d out of %d processes\n",
+    printf("Gratitude!!! from ``%s``, rank %d out of %d processes\n",
         processor_name, world_rank, world_size);
 
     // The times are local; the attribute MPI_WTIME_IS_GLOBAL may be used 
