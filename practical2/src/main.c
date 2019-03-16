@@ -23,19 +23,47 @@ int main(int argc, char** argv) {
 
     // Get the rank of the process
     int world_rank;
+    int data;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    if (world_rank == 0){
-        printf("***I'm The master!! Kneel before your master***\n");
-    }
 
+    // Task 3: Broadcast Data
+    if (world_rank == 0){
+        // Master Process
+        // printf("***I'm The master!! Kneel before your master***\n");
+        // for detail refer http://mpitutorial.com/tutorials/mpi-broadcast-and-collective-communication/
+        data = 100;
+        printf("[master-process:%d] broadcasting data %d\n", world_rank, data);
+        double start = MPI_Wtime();
+        MPI_Bcast(
+            &data,          // void* data               data variable
+            1,              // int count,
+            MPI_INT,        // MPI_Datatype datatype,
+            0,              // int root                 process zero
+            MPI_COMM_WORLD  // MPI_Comm communicator
+            );
+        double end = MPI_Wtime();
+        printf("[master-process:%d] Time Elapsed: %lf\n", world_rank, end - start);
+    }
+    else {
+        // Node/Slave Processes
+        double start = MPI_Wtime();
+        MPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        double end = MPI_Wtime();
+        printf("[node-process:%d] received data %d from root process\n", world_rank, data);
+        printf("[node-process:%d] Time Elapsed: %lf\n", world_rank, end - start);
+    }
     // Get the name of the processor
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     int name_len;
     MPI_Get_processor_name(processor_name, &name_len);
 
-    // Print off a hello world message
-    printf("Gratitude!!! from your %s, rank %d out of %d processors\n",
+    // Task 1: print Computer machine name and rank id for each process.
+    printf("Gratitude!!! from %s, rank %d out of %d processes\n",
         processor_name, world_rank, world_size);
+
+    // The times are local; the attribute MPI_WTIME_IS_GLOBAL may be used 
+    // to determine if the times are also synchronized with each other for 
+    // all processes in MPI_COMM_WORLD. 
 
     // Finalize the MPI environment. No more MPI calls can be made after this
     MPI_Finalize();
