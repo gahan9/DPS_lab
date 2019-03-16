@@ -1,0 +1,24 @@
+[master-process:0] broadcasting data 100
+[master-process:0] Time Elapsed: 0.000450
+Gratitude!!! from ``master``, rank 0 out of 8 processes
+[master-process:2] received data 100 from master
+[master-process:2] Time Elapsed: 0.000534
+Gratitude!!! from ``master``, rank 2 out of 8 processes
+[master-process:4] received data 100 from master
+[master-process:4] Time Elapsed: 0.000524
+Gratitude!!! from ``master``, rank 4 out of 8 processes
+[master-process:6] received data 100 from master
+[master-process:6] Time Elapsed: 0.000556
+Gratitude!!! from ``master``, rank 6 out of 8 processes
+[node-process:1] received data 100 from master
+[node-process:1] Time Elapsed: 0.000570
+Gratitude!!! from ``node``, rank 1 out of 8 processes
+[node-process:3] received data 100 from master
+[node-process:3] Time Elapsed: 0.000588
+Gratitude!!! from ``node``, rank 3 out of 8 processes
+[node-process:5] received data 100 from master
+[node-process:5] Time Elapsed: 0.000595
+Gratitude!!! from ``node``, rank 5 out of 8 processes
+[node-process:7] received data 100 from master
+[node-process:7] Time Elapsed: 0.000610
+Gratitude!!! from ``node``, rank 7 out of 8 processes
