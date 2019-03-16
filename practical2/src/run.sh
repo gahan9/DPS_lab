@@ -1,1 +1,5 @@
-mpicc main.c -o main && mpirun -np 15 --hosts master,node ./main
+read processes
+
+mpicc main.c -o main
+
+mpirun -np $processes --hosts master,node ./main > output.txt
