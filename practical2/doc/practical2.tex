@@ -127,8 +127,23 @@
 	bgcolor=LightGray,
 %	fontsize=\small
 }
+\setminted[bash]{
+%	frame=lines, 
+	breaklines,
+	baselinestretch=1.2,
+	bgcolor=LightGray,
+%	fontsize=\small
+}
 
 \setminted[python]{
+	frame=lines, 
+	breaklines, 
+	linenos,
+	baselinestretch=1.2,
+%	bgcolor=LightGray,
+%	fontsize=\small
+}
+\setminted[c]{
 	frame=lines, 
 	breaklines, 
 	linenos,
@@ -149,72 +164,200 @@
 		\item List problem observed during setup and execution
 		\item Specify cause and solution of each problem
 	\end{itemize}
+    \item print Computer machine name and rank id for each process.
+    \item MPI time function to measure time taken by given fragment.
+    \item Communication function (send/receive or scatter or broadcast etc.)
+    \item Find command to set fix process per node.
 \end{itemize}
 
-\section{Introduction}
-Generic steps:
+\section{Prerequisite}
+Install MPICH2 in each of the machine
+
+\section{MPI Setup}
+\subsection{Configure hosts file}
+You are gonna need to communicate between the computers and you don’t want to type in the IP addresses every so often. Instead, you can give a name to the various nodes in the network that you wish to communicate with. hosts file is used by your device operating system to map hostnames to IP addresses.
+
+\begin{minted}{bash}
+$ sudo nano /etc/hosts
+
+10.1.3.4       master
+10.1.3.5       node
+\end{minted}
+
+\subsection{Create a new user}
+Though you can operate your cluster with your existing user account, I’d recommend you to create a new one to keep our configurations simple. 
+Let us create a new user $ mpi $.
+
+\textit{Create new user accounts with the same username in all the machines to keep things simple.}
+
+\begin{minted}{bash}
+$ sudo adduser mpi
+\end{minted}
+
+Follow prompts and you will be good. Please don’t use $ useradd $ command to create a new user as that doesn’t create a separate home for new users.
+
+\subsection{Setting up SSH}
+machines are gonna be talking over the network via SSH and share data via NFS.
+
+\begin{minted}{bash}
+$ sudo apt­-get install openssh-server
+\end{minted}
+
+And right after that, login with your newly created account
+\begin{minted}{bash}
+$ su - mpi
+\end{minted}
+ 
+Since the ssh server is already installed, you must be able to login to other machines by ssh username@hostname, at which you will be prompted to enter the password of the username. To enable more easier login, we generate keys and copy them to other machines’ list of authorized\_keys.
+
+\begin{minted}{bash}
+$ ssh-keygen -t rsa
+\end{minted}
+Now, add the generated key to each of the other computers. In our case, the client machine.
+
+\begin{minted}{bash}
+$ ssh-copy-id client #ip-address may also be used
+\end{minted}
+
+Do the above step for each of the client machines and your own user (localhost).
+
+This will setup openssh-server for you to securely communicate with the client machines. ssh all machines once, so they get added to your list of known\_hosts. This is a very simple but essential step failing which passwordless ssh will be a trouble.
+
+Now, to enable passwordless ssh,
+
+\begin{minted}{bash}
+$ eval `ssh-agent`
+$ ssh-add ~/.ssh/id_dsa
+\end{minted}
+
+Now, assuming you’ve properly added your keys to other machines, you must be able to login to other machines without any password prompt.
+
+
+\subsection{Setting up NFS}
+You share a directory via NFS in \textbf{master} which the \textbf{mpi} mounts to exchange data.
+
+\subsubsection{NFS-Server}
+Install the required packages by
+\begin{minted}{bash}
+$ sudo apt-get install nfs-kernel-server
+\end{minted}
+
+Now export directory to share among nodes as below:
+\begin{minted}{bash}
+$ sudo nano /etc/exports
+/home/mpiuser/cloud *(rw,sync,no_root_squash,no_subtree_check)
+\end{minted}
+
 \begin{itemize}
-	\item Making code sequential code to parallel using openmp
-	\item Do speedup calculation -- Sequential/parallel	
-	\item compute the same speedup for various values
+    \item Here, instead of $ * $ you can specifically give out the IP address to which you want to share this folder to. But, this will just make our job easier.
+    
+    \item \textbf{rw}: This is to enable both read and write option. ro is for read-only.
+    \item \textbf{sync}: This applies changes to the shared directory only after changes are committed.
+    \item \textbf{no\_subtree\_check}: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
+    \item \textbf{no\_root\_squash}: This allows root account to connect to the folder.
 \end{itemize}
 
-\section{Implementation}
-\textbf{Implementing Vector Addition}
-Steps:
+After you have made the entry, run the following.
+
+\begin{minted}{bash}
+$ sudo exportfs -a
+\end{minted}
+Run the above command, every time you make a change to $ /etc/exports $.
+
+
+If required, restart the nfs server
+\begin{minted}{bash}
+$ sudo service nfs-kernel-server restart
+\end{minted}
+
+\subsubsection{NFS-Client}
+Install the required packages
+\begin{minted}{bash}
+$ sudo apt-get install nfs-common
+\end{minted}
+
+mount the shared directory like
+\begin{minted}{bash}
+$ sudo mount -t nfs master:/home/mpi ~/
+\end{minted}
+
+To make the mount permanent so you don’t have to manually mount the shared directory everytime you do a system reboot, you can create an entry in your file systems table - i.e., $ /etc/fstab $ file like this:
+\begin{minted}{bash}
+$ sudo nano /etc/fstab
+#MPI CLUSTER SETUP
+master:/home/mpiuser/cloud /home/mpiuser/cloud nfs
+\end{minted}
+
+\section{Troubleshooting Setup}
 \begin{itemize}
-	\item Implement Sequential code
-	\item Implement Parallel code
-	\item Implement function for verification of output (for accuracy calculation)
-	\item Observe time for consumed for execution of sequential and parallel code over 100 iterations (repeating operation for 100 times)
-	\item Calculate speedup for various input size
+    \item Make sure all the machines you are trying to run the executable on, has the same version of MPI. Recommended is MPICH2.
+    \item The hosts file of master should contain the local network IP address entries of master and all of the slave nodes. For each of the slave, you need to have the IP address entry of master and the corresponding slave node.
+    \item Whenever you try to run a process parallely using MPI, you can either run the process locally or run it as a combination of local and remote nodes. You cannot invoke a process only on other nodes.
+    
+    To make this more clear, from master node, this script can be invoked.
+    \begin{minted}{bash}
+$ mpirun -np 10 --hosts master ./main
+# To run the program only on the same master node
+    \end{minted}
+    So can this be. The following will also run perfectly.
+    \begin{minted}{bash}
+$ mpirun -np 10 --hosts master,node ./main
+# To run the program on master and slave nodes.
+    \end{minted}
+    But, the following is not correct and will result in an error if invoked from master.
+    \begin{minted}{bash}
+$ mpirun -np 10 --hosts node ./cpi
+# Trying to run the program only on remote slave
+    \end{minted}
+    \item \textbf{Architecture Issue}: Try using same hardware architecture for master and slaves (otherwise you need to learn how to run mpi file on cross platform) and will generate either error with using library with either ELFCLASS64 or ELFCLASS32
+    \item Avoid mount entry in $ /etc/fstab $
+    \\ The reason is if your server is not going to be live 24 hours the system tries to mount that partition and you might face login loop for the user.
+    \item DO NOT TURN OFF master node before un mounting partition which is mounted in home directory of existing system 
 \end{itemize}
+
+
 \subsection{Sequential Code}
 \inputminted{c}{../src/main.c}
 
-\subsection{Parallel Code}
-\inputminted{c}{../src/vectorAddParallel.c}
+\subsubsection{Compiling and Executing File!!!}
+\inputminted{bash}{../src/run.sh}
 
-\section{Analysis}
-Below is the result of observation over $ 100 $ iterations for various input size
-%\inputminted{text}{../src/observation.csv}
-\\
+\subsubsection{Output}
+\inputminted{text}{../src/output.txt}
 
-\begin{tabular}{c | l | l | l | l | l}%
-    	\bfseries Data size 
-    & \bfseries Sequential Time 
-    & \bfseries Parallel Time$_1 $ 
-    & \bfseries Parallel Time$_2 $ 
-    & \bfseries Speedup$_1 $ 
-    & \bfseries Speedup$_2 $% specify table head
-    
-%	\bfseries data\_size ($ \log_{10} $) & \bfseries time\_seq & \bfseries time\_parallel\_1 & \bfseries time\_parallel\_2 & \bfseries speedup1 & \bfseries speedup2% specify table head
-	\csvreader[data\_size\_log10 time\_seq time\_parallel\_1 time\_parallel\_2 speedup1 speedup2]{../src/observation.csv}{}% use head of csv as column names
-    {\\\hline
-        10^\csvcoli 
-        &\csvcolii
-        &\csvcoliii
-        &\csvcoliv
-        &\csvcolv
-        &\csvcolvi
-    }
-\end{tabular}
+\section{Fix Process per node}
+According to \href{https://www.open-mpi.org/doc/v3.1/man1/mpirun.1.php}{documentation of mpirun} here are the list of flags helpful to set fix number of processes per node.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{assets/time_graph.png}
-    \caption{Analysis of Time consumed by thread(s) for calculation of number of inputs (x-axis scaled to the log base 10)}
-\end{figure}
+\begin{itemize}
+    \item \textbf{-npersocket, --npersocket <\#persocket>}
+    On each node, launch this many processes times the number of processor sockets on the node. The -npersocket option also turns on the -bind-to-socket option. (deprecated in favor of --map-by ppr:n:socket) 
+    \item \textbf{-npernode, --npernode <\#pernode>}
+    On each node, launch this many processes. (deprecated in favor of --map-by ppr:n:node) 
+    \item \textbf{-pernode, --pernode}
+    On each node, launch one process -- equivalent to -npernode 1. (deprecated in favor of --map-by ppr:1:node)
+\end{itemize}
+The number of processes launched can be specified as a multiple of the number of nodes or processor sockets available. 
+ 
+For example,
+\begin{minted}{bash}
+mpirun -H aa,bb -npersocket 2 ./a.out
+\end{minted}
+launches processes 0-3 on node aa and process 4-7 on node bb, where aa and bb are both dual-socket nodes. The -npersocket option also turns on the -bind-to-socket option, which is discussed in a later section.
+ 
+\begin{minted}{bash}
+mpirun -H aa,bb -npernode 2 ./a.out
+\end{minted}
+launches processes 0-1 on node aa and processes 2-3 on node bb. 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{assets/speedup_graph.png}
-    \caption{Comparison of speed up achieved from two method of parallelism}
-\end{figure}
+\begin{minted}{bash}
+mpirun -H aa,bb -npernode 1 ./a.out
+\end{minted}
+launches one process per host node. 
 
-\section{Conclusion}
-To get the speedup accurately the data and graphs values are based on summation of 100 iterations and it's been observed that for very initial where input vector size is about $ 10^7 $ then observed amount of time with parallel implementation is affecting negligible enhancement, however as the input size increase afterwards overall speedup observed about $ 1.21 $.
-
+\begin{minted}{bash}
+mpirun -H aa,bb -pernode ./a.out
+\end{minted}
+is the same as -npernode 1. 
 
 \end{document}
 
