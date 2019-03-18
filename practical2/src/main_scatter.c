@@ -7,7 +7,8 @@
 // Setup MPI and execute sample code given in MPI src.
 // Code should print Computer machine name and rank id for each process.
 // Find command to set fix process per node.
-
+#DEFINE ARR_RANGE 20
+#DEFINE SUB_ARR_RANGE 4
 #include "mpi.h"
 #include <stdio.h>
 
@@ -25,26 +26,34 @@ int main(int argc, char** argv) {
 
     // Get the rank of the process
     int world_rank;
-    int data;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
+    int data;
+    int *arr= (int *) malloc(sizeof(int) * ARR_RANGE);
+    int *sub_arr= (int *) malloc(sizeof(int) * SUB_ARR_RANGE);
     // Task 3: Broadcast Data
     if (world_rank == 0){
         // Master Process
         // printf("***I'm The master!! Kneel before your master***\n");
         // for detail refer http://mpitutorial.com/tutorials/mpi-broadcast-and-collective-communication/
         data = 100;
+        for(int i=0; i<ARR_RANGE; i++){
+            arr[i] = i;
+        }
         MPI_Get_processor_name(processor_name, &name_len);
         // Task 1: printing processor name
         printf("[%s-process:%d] broadcasting data %d\n", processor_name, world_rank, data);
         double start = MPI_Wtime();
-        MPI_Bcast(
-            &data,          // void* data               data variable
-            1,              // int count,
-            MPI_INT,        // MPI_Datatype datatype,
-            world_rank,     // int root                 process zero
-            MPI_COMM_WORLD  // MPI_Comm communicator
-            );
+        MPI_Scatter(
+            arr,                 // void* send_data,
+            ARR_RANGE,           // int send_count,
+            MPI_INT,             // MPI_Datatype send_datatype,
+            sub_arr,             // void* recv_data,
+            SUB_ARR_RANGE,       // int recv_count,
+            MPI_INT,             // MPI_Datatype recv_datatype,
+            0,                   // int root,
+            MPI_COMM_WORLD       // MPI_Comm communicator
+        )
         double end = MPI_Wtime();
         // Task 2: Time measure
         printf("[%s-process:%d] Time Elapsed: %lf\n", processor_name, world_rank, end - start);
@@ -52,24 +61,24 @@ int main(int argc, char** argv) {
     else {
         // Node/Slave Processes
         double start = MPI_Wtime();
-        MPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        
+        MPI_Gather(
+            arr,                 // void* send_data,
+            ARR_RANGE,           // int send_count,
+            MPI_INT,             // MPI_Datatype send_datatype,
+            sub_arr,             // void* recv_data,
+            SUB_ARR_RANGE,       // int recv_count,
+            MPI_INT,             // MPI_Datatype recv_datatype,
+            0,                   // int root,
+            MPI_COMM_WORLD       // MPI_Comm communicator
+        )
+
         double end = MPI_Wtime();
         MPI_Get_processor_name(processor_name, &name_len);
         // Task 1: printing processor name
         printf("[%s-process:%d] received data %d from master\n", processor_name, world_rank, data);
         printf("[%s-process:%d] Time Elapsed: %lf\n", processor_name, world_rank, end - start);
     }
-    
-    // Get the name of the processor
-    MPI_Get_processor_name(processor_name, &name_len);
-
-    // Task 1: print Computer machine name and rank id for each process.
-    printf("Gratitude!!! from ``%s``, rank %d out of %d processes\n",
-        processor_name, world_rank, world_size);
-
-    // The times are local; the attribute MPI_WTIME_IS_GLOBAL may be used 
-    // to determine if the times are also synchronized with each other for 
-    // all processes in MPI_COMM_WORLD. 
 
     // Finalize the MPI environment. No more MPI calls can be made after this
     MPI_Finalize();
