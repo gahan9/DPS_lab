@@ -24,6 +24,15 @@ Code should have following  basic functions:
 
 ---
 
-[Practical 3: ]()
+[Practical 3: Comparing openmp schedules]()
+
+Write a code to find out all prime factors of given number.  
+
+Analyse the same using various openmp pragma method listed below:  
+
+- `#pragma omp parallel for schedule(static)`  
+- `#pragma omp parallel for schedule(static, 1)`  
+- `#pragma omp parallel for schedule(dynamic, 4)`  
+- `#pragma omp parallel for schedule(guided, 4)`  
 
 ---
