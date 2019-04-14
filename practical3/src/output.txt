@@ -1,0 +1,50 @@
+Default
+To add 1000000 elements of vectots 4 thread(s) took 1.122117 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.903338 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.855704 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.945774 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.875356 seconds
+AUTO
+To add 1000000 elements of vectots 4 thread(s) took 0.434917 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.335985 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.342200 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.584245 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.342788 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.412167 seconds
+DYNAMIC_DEFAULT
+To add 1000000 elements of vectots 4 thread(s) took 3.638568 seconds
+To add 1000000 elements of vectots 4 thread(s) took 3.693634 seconds
+To add 1000000 elements of vectots 4 thread(s) took 3.676371 seconds
+To add 1000000 elements of vectots 4 thread(s) took 3.708186 seconds
+DYNAMIC_100_chunk
+To add 1000000 elements of vectots 4 thread(s) took 0.337022 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.340910 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.521423 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.336306 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.342733 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.350740 seconds
+GUIDED_DEFAULT
+To add 1000000 elements of vectots 4 thread(s) took 0.365065 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.359249 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.351849 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.357288 seconds
+GUIDED_100_chunk
+To add 1000000 elements of vectots 4 thread(s) took 0.338783 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.346711 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.360600 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.345689 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.348527 seconds
+STATIC_100_chunk
+To add 1000000 elements of vectots 4 thread(s) took 0.377454 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.399695 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.365415 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.356307 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.358254 seconds
+STATIC_DEFAULT
+To add 1000000 elements of vectots 4 thread(s) took 0.423493 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.459368 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.625309 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.538095 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.372380 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.393335 seconds
+To add 1000000 elements of vectots 4 thread(s) took 0.574369 seconds
