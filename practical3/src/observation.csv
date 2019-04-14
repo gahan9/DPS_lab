@@ -3,9 +3,9 @@ default, -1, 0.875356
 auto, -1, 0.412167
 dynamic, -1, 3.638568
 dynamic, 100, 0.342733
-dynamic, ARRAY_SIZE/no_of_threads, 0.333883
+dynamic, 250000, 0.333883
 guided, -1, 0.351849
 guided, 100, 0.338783
-guided, ARRAY_SIZE/no_of_threads, 0.332249
+guided, 250000, 0.332249
 static, -1, 0.399695
 static, 100, 0.423493

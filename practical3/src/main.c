@@ -4,10 +4,7 @@
 // StackOverflow: https://stackoverflow.com/users/story/7664524
 // Website: http://gahan9.github.io/
 // --------------------------------------------------------------------------------------------
-// Making code sequential code to parallel using openmp
-// Do speedup calculation -- Sequential/parallel
-// Show profiling and total execution time
-// Standard vector addition (serial, without OMP)
+// Comparing various OpenMP scheduling method
 
 #include <stdio.h>
 #include <stdlib.h>
