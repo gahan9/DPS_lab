@@ -347,7 +347,7 @@ Below is the result of observation over $ 100 $ iterations for input size $ 10^6
 
 %\inputminted{text}{../src/observation.csv}
 
-\begin{table}[!htbp]
+\begin{table}[H]
     \centering
     \renewcommand{\arraystretch}{1.5}
     \begin{tabular}{| c | c | c |}%
@@ -382,13 +382,8 @@ Below is the result of observation over $ 100 $ iterations for input size $ 10^6
 %\end{figure}
 
 \section{Conclusion}
-For the example considered in Program described in Section \ref{section:implementation}.\ref{code} and results from Table \ref{table:observations} we can conclude that the task is to simply add two numbers for each index element in both the vectors.
-\begin{itemize}
-    \item guided scheduling method tooks minimum execution time
-    \item for the dynamic scheduling the same value are updated as \verb|no-of-chunks-defined|.
-\end{itemize}
 
-\begin{table}[!htbp]
+\begin{table}[H]
     \centering
     \begin{tabular}{c | p{15cm}}
         \textbf{Method} & \textbf{Description}
@@ -408,7 +403,15 @@ For the example considered in Program described in Section \ref{section:implemen
         \\ \hline
         auto & When schedule(auto) is specified, the decision regarding scheduling is delegated to the compiler and/or runtime system. The programmer gives the implementation the freedom to choose any possible mapping of iterations to threads in the team
     \end{tabular}
+    \caption{AllInOne of Scheduling types and description}
 \end{table}
+
+For the example considered in Program described in Section \ref{section:implementation}.\ref{code} and results from Table \ref{table:observations} we can conclude that the task is to simply add two numbers for each index element in both the vectors.
+\begin{itemize}
+    \item guided scheduling method tooks minimum execution time
+    \item for the dynamic scheduling the same value are updated as \verb|no-of-chunks-defined|.
+\end{itemize}
+
 \end{document}
 
 
