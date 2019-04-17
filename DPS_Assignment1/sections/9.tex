@@ -1,0 +1,32 @@
+\section{Application of Amdahl's law and Gustafson's law}
+
+\subsection*{Amdahl's law}
+\subsubsection*{Multiprocessing}
+The original formulation of Amdahl's law states the impact of inherently sequential portion of a task on the speedup during multiprocessing. Suppose f represents the fraction of the task that is inherently sequential then using N processors the speedup is given by
+
+\begin{equation}
+    S = \frac{1}{f + (1-f) N}
+\end{equation}
+
+\[
+S =
+\begin{cases}
+N , & \text{when } f=0; \text{resulting in an ideal linear speedup} \\
+<5, & \text{when } f=0.2; \text{independent of N} \\
+<2, & \text{when } f=0.5; \text{independent of N} \\
+\frac{1}{f}, & \text{for large } N; \text{independent of N}
+\end{cases}
+\]
+
+This relationship generates pessimism regarding the viability of massively parallel processing especially if we overestimate the value of the fraction f. But, researchers in parallel computation community started suspecting the usefulness and validity of Amdahl's law after observing impressive linear speedups in some large applications.
+
+\subsubsection*{MEMORY HIERARCHY DESIGN}
+
+\subsubsection*{INSTRUCTION SET AND PROCESSOR DESIGN}
+
+\subsection*{Gustafson's law}
+\begin{itemize}
+    \item beam stress analysis
+    \item surface wave simulation 
+    \item unstable fluid flow
+\end{itemize}

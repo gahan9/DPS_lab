@@ -1,0 +1,254 @@
+\section{Write major MPI routine with its application, where to write (i.e.master/slave/any sender processor/any or all receiver) it's syntax and sample mpi statement with description. Use table to describe it and also mention Communication cost}
+
+\begin{table}[!htbp]
+    % \centering
+    \hspace{-1cm}
+    \begin{tabular}{l | p{4.5cm} | p{8cm}}
+         \textbf{Routine} &  \textbf{Syntax} & \textbf{Description} \\ \hline
+         \hline
+             MPI\_Init 
+             &  MPI\_Init (\&argc,\&argv) 
+             & Initializes the MPI execution environment. This function must be called in every MPI program, before any other MPI functions and must be called only once in an MPI program.
+         \\ \hline
+            MPI\_Comm\_Size
+            & MPI\_Comm\_size (comm,size)
+            & Returns the total number of MPI processes in the specified communicator, such as MPI\_COMM\_WORLD. If the communicator is MPI\_COMM\_WORLD, then it represents the number of MPI tasks available to your application.
+        \\ \hline
+            MPI\_Comm\_rank
+            & MPI\_Comm\_rank (comm,\&rank) 
+            & Returns the rank of the calling MPI process within the specified communicator. Initially, each process will be assigned a unique integer rank between 0 and number of tasks - 1 within the communicator MPI\_COMM\_WORLD. 
+            % This rank is often referred to as a task ID. If a process becomes associated with other communicators, it will have a unique rank within each of these as well.
+        \\ \hline
+            MPI\_Get\_processor\_name
+            & MPI\_Get\_processor\_name (\&name,\&resultlength)
+            & Returns the processor name. Also returns the length of the name. The buffer for "name" must be at least MPI\_MAX\_PROCESSOR\_NAME characters in size.
+        \\ \hline
+            MPI\_Wtime
+            & MPI\_Wtime()
+            & Returns an elapsed wall clock time in seconds (double precision) on the calling processor.
+        \\ \hline
+            MPI\_Finalize
+            & MPI\_Finalize()
+            & Terminates the MPI execution environment.
+    \end{tabular}
+    \caption{Environment Management Routines}
+    \label{tab:EnvironmentManagementRoutines}
+\end{table}
+
+\subsection*{Example of Environment Management Routines}
+\begin{minted}{c}
+// required MPI include file  
+#include "mpi.h"
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+int  numtasks, rank, len, rc; 
+char hostname[MPI_MAX_PROCESSOR_NAME];
+
+// initialize MPI  
+MPI_Init(&argc,&argv);
+
+// get number of tasks 
+MPI_Comm_size(MPI_COMM_WORLD,&numtasks);
+
+// get my rank  
+MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+
+// this one is obvious  
+MPI_Get_processor_name(hostname, &len);
+printf ("Number of tasks= %d My rank= %d Running on %s\n", numtasks,rank,hostname);
+// do some work with message passing 
+// done with MPI  
+MPI_Finalize();
+}
+\end{minted}
+
+\subsection{Point to Point Communication Routines}
+This point to point communication routines can be called by any node however if one node calls \verb|MPI_Send| routine then some other node in network must be calling \verb|MPI_Recv|. 
+
+Hence to use this routine at least one sender is required and there should be one receiver to receive the data message.
+
+\begin{table}[!htbp]
+    % \centering
+    \hspace{-2cm}
+    \begin{tabular}{l | p{5cm} | p{5cm} | p{5cm}}
+         \textbf{Routine} &  \textbf{Syntax} & \textbf{Description} & \textbf{Communication Cost}
+         \\ \hline
+         \hline 
+            MPI\_Send
+            & \makecell[tl]{
+            MPI\_Send(
+                \\ void* data, 
+                \\ int count, 
+                \\ MPI\_Datatype datatype, 
+                \\ int destination, 
+                \\ int tag, 
+                \\ MPI\_Comm communicator
+                \\ )
+            }
+            & almost every MPI call uses similar syntax. The first argument is the data buffer. The second and third arguments describe the count and type of elements that reside in the buffer. MPI\_Send sends the exact count of elements, and MPI\_Recv will receive at most the count of elements (more on this in the next lesson).
+            & $ no\_of\_processor \times (Time_{startup} + Time_{data}) $
+        \\ \hline
+            MPI\_Recv
+            & \makecell[tl]{
+            MPI\_Recv(
+                \\ void* data,
+                \\ int count,
+                \\ MPI\_Datatype datatype,
+                \\ int source,
+                \\ int tag,
+                \\ MPI\_Comm communicator,
+                \\ MPI\_Status* status)
+            }
+        & The fourth and fifth arguments specify the rank of the sending/receiving process and the tag of the message. The sixth argument specifies the communicator and the last argument (for MPI\_Recv only) provides information about the received message.
+        & $ Time_{startup} + Time_{data} $
+        \\ \hline
+    \end{tabular}
+    \caption{Point to Point Communication Routines}
+    \label{tab:P2PCommunicationRoutines}
+\end{table}
+
+\subsection*{Example of Point to Point Communication}
+
+\begin{minted}{c}
+// Find out rank, size
+int world_rank;
+MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+int world_size;
+MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+int number;
+if (world_rank == 0) {
+    number = -1;
+    MPI_Send(&number, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+} else if (world_rank == 1) {
+    MPI_Recv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD,
+             MPI_STATUS_IGNORE);
+    printf("Process 1 received number %d from process 0\n",
+           number);
+}
+\end{minted}
+
+
+\subsection{Collective Communication Routines}
+These MPI routines are needs to be written at every node. Note that any node can invoke these routines.
+\begin{table}[h]
+    % \centering
+    \hspace{-2cm}
+    \begin{tabular}{l | p{5.5cm} | p{5cm} | p{4cm}}
+         \textbf{Routine} &  \textbf{Syntax} & \textbf{Description} & \textbf{Communication Cost}
+         \\ \hline
+         \hline 
+            MPI\_Bcast
+            & \makecell[tl]{
+            MPI\_Bcast(
+                \\ void* data,
+                \\ int count,
+                \\ MPI\_Datatype datatype,
+                \\ int root,
+                \\ MPI\_Comm communicator)
+            }
+            & Broadcasts (sends) a message from the process with rank "root" to all other processes in the group
+            & $ Time_{startup} + (no\_of\_processor \times Time_{data}) $
+        \\ \hline
+            MPI\_Scatter
+            & \makecell[tl]{
+                MPI\_Scatter(
+                    \\ void* send\_data,
+                    \\ int send\_count,
+                    \\ MPI\_Datatype send\_datatype,
+                    \\ void* recv\_data,
+                    \\ int recv\_count,
+                    \\ MPI\_Datatype recv\_datatype,
+                    \\ int root,
+                    \\ MPI\_Comm communicator
+                )
+            }
+            & MPI\_Scatter is a collective routine that is very similar to MPI\_Bcast
+            & $ Time_{startup} + (no\_of\_processor \times Time_{data}) $
+        \\ \hline
+            MPI\_Gather
+            & \makecell[tl]{
+            MPI\_Gather(
+                \\ void* send\_data,
+                \\ int send\_count,
+                \\ MPI\_Datatype send\_datatype,
+                \\ void* recv\_data,
+                \\ int recv\_count,
+                \\ MPI\_Datatype recv\_datatype,
+                \\ int root,
+                \\ MPI\_Comm communicator)
+            }
+            & Gathers distinct messages from each task in the group to a single destination task. This routine is the reverse operation of MPI\_Scatter
+            & $ Time_{startup} + Time_{data} $
+        \\ \hline
+            MPI\_Reduce
+            & \makecell[tl]{
+                MPI\_Reduce(
+                    \\ void* send\_data,
+                    \\ void* recv\_data,
+                    \\ int count,
+                    \\ MPI\_Datatype datatype,
+                    \\ MPI\_Op op,
+                    \\ int root,
+                    \\ MPI\_Comm communicator
+                )
+            }
+            & Similar to MPI\_Gather, MPI\_Reduce takes an array of input elements on each process and returns an array of output elements to the root process. The output elements contain the reduced result.
+            & $ Time_{startup} + Time_{data} $
+    \end{tabular}
+    \caption{Collective Communication Routines}
+    \label{tab:CollectiveCommunicationRoutines}
+\end{table}
+
+
+\subsubsection*{Example of MPI\_Bcast}
+\begin{minted}{c}
+for (i = 0; i < num_trials; i++) {
+    // Time my_bcast
+    // Synchronize before starting timing
+    MPI_Barrier(MPI_COMM_WORLD);
+    total_my_bcast_time -= MPI_Wtime();
+    my_bcast(data, num_elements, MPI_INT, 0, MPI_COMM_WORLD);
+    // Synchronize again before obtaining final time
+    MPI_Barrier(MPI_COMM_WORLD);
+    total_my_bcast_time += MPI_Wtime();
+    
+    // Time MPI_Bcast
+    MPI_Barrier(MPI_COMM_WORLD);
+    total_mpi_bcast_time -= MPI_Wtime();
+    MPI_Bcast(data, num_elements, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+    total_mpi_bcast_time += MPI_Wtime();
+}
+\end{minted}
+
+\subsubsection*{Example of MPI\_Reduce}
+\begin{minted}{c}
+float *rand_nums = NULL;
+rand_nums = create_rand_nums(num_elements_per_proc);
+
+// Sum the numbers locally
+float local_sum = 0;
+int i;
+for (i = 0; i < num_elements_per_proc; i++) {
+  local_sum += rand_nums[i];
+}
+
+// Print the random numbers on each process
+printf("Local sum for process %d - %f, avg = %f\n",
+       world_rank, local_sum, local_sum / num_elements_per_proc);
+
+// Reduce all of the local sums into the global sum
+float global_sum;
+MPI_Reduce(&local_sum, &global_sum, 1, MPI_FLOAT, MPI_SUM, 0,
+           MPI_COMM_WORLD);
+
+// Print the result
+if (world_rank == 0) {
+  printf("Total sum = %f, avg = %f\n", global_sum,
+         global_sum / (world_size * num_elements_per_proc));
+}
+
+\end{minted}
+In the code above, each process creates random numbers and makes a local\_sum calculation. The local\_sum is then reduced to the root process using MPI\_SUM. The global average is then $ global\_sum / (world\_size * num\_elements\_per\_proc) $
