@@ -1,0 +1,10 @@
+\section{From Classes to Actors}
+It’s challenging to write interesting applications without using classes, and this is as true in the distributed setting as it is on a single core.
+
+Ray allows you to take a Python class and declare it with the @ray.remote decorator. Whenever the class is instantiated, Ray creates a new “actor”, which is a process that runs somewhere in the cluster and holds a copy of the object. Method invocations on that actor turn into tasks that run on the actor process and can access and mutate the state of the actor. In this manner, actors allow mutable state to be shared between multiple tasks in a way that remote functions do not.
+
+Individual actors execute methods serially (each individual method is atomic) so there are no race conditions. Parallelism can be achieved by creating multiple actors.
+
+%\inputminted{python}{../src/05.ActorsClasses}
+
+    The above example is the simplest possible usage of actors. The line \verb|Counter.remote()| creates a new actor process, which has a copy of the Counter object. The calls to c.\verb|get_value.remote|() and c.inc.remote() execute tasks on the remote actor process and mutate the state of the actor.
