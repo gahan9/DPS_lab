@@ -1,5 +1,0 @@
-\section{}
-
-In the above example, we only invoked methods on the actor from the main Python script. One of the most powerful aspects of actors is that we can pass around handles to an actor, which allows other actors or other tasks to all invoke methods on the same actor.
-
-The following example creates an actor that stores messages. Several worker tasks repeatedly push messages to the actor, and the main Python script reads the messages periodically.

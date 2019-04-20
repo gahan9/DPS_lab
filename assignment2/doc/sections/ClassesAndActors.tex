@@ -5,6 +5,17 @@ Ray allows you to take a Python class and declare it with the @ray.remote decora
 
 Individual actors execute methods serially (each individual method is atomic) so there are no race conditions. Parallelism can be achieved by creating multiple actors.
 
-%\inputminted{python}{../src/05.ActorsClasses}
+\inputminted{python}{../src/05.ActorsClasses.py}
 
-    The above example is the simplest possible usage of actors. The line \verb|Counter.remote()| creates a new actor process, which has a copy of the Counter object. The calls to c.\verb|get_value.remote|() and c.inc.remote() execute tasks on the remote actor process and mutate the state of the actor.
+The above example is the simplest possible usage of actors. The line \verb|Counter.remote()| creates a new actor process, which has a copy of the Counter object. The calls to \verb|c.get_value.remote()| and c.inc.remote() execute tasks on the remote actor process and mutate the state of the actor.
+
+\subsection{Actor Handles}
+In the above example, we only invoked methods on the actor from the main Python script. One of the most powerful aspects of actors is that we can pass around handles to an actor, which allows other actors or other tasks to all invoke methods on the same actor.
+
+The following example creates an actor that stores messages. Several worker tasks repeatedly push messages to the actor, and the main Python script reads the messages periodically.
+
+\inputminted{python}{../src/06.ActorHandles.py}
+
+Actors are extremely powerful. They allow you to take a Python class and instantiate it as a microservice which can be queried from other actors and tasks and even other applications.
+
+Tasks and actors are the core abstractions provided by Ray. These two concepts are very general and can be used to implement sophisticated applications including Ray’s builtin libraries for reinforcement learning, hyperparameter tuning, speeding up Pandas, and much more.
