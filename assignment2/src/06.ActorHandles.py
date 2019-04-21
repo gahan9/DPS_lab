@@ -1,3 +1,13 @@
+#!/home/jarvis/.virtualenvs/ray/bin/python3
+# -*- coding: utf-8 -*-
+"""
+Author: Gahan Saraiya
+GiT: https://github.com/gahan9
+StackOverflow: https://stackoverflow.com/users/story/7664524
+
+Code for invoking methods on an actor from multiple concurrent tasks.
+"""
+
 __doc__ = """Code for invoking methods on an actor from multiple concurrent tasks.
 """
 
@@ -30,18 +40,19 @@ def worker(message_actor, j):
         message_actor.add_message.remote(
             "Message {} from worker {}.".format(i, j))
 
+if __name__ == "__main__":
+    ray.init()
+    # Create a message actor.
+    message_actor = MessageActor.remote()
 
-# Create a message actor.
-message_actor = MessageActor.remote()
+    # Start 3 tasks that push messages to the actor.
+    [worker.remote(message_actor, j) for j in range(3)]
 
-# Start 3 tasks that push messages to the actor.
-[worker.remote(message_actor, j) for j in range(3)]
-
-# Periodically get the messages and print them.
-for _ in range(100):
-    new_messages = ray.get(message_actor.get_and_clear_messages.remote())
-    print("New messages:", new_messages)
-    time.sleep(1)
+    # Periodically get the messages and print them.
+    for _ in range(100):
+        new_messages = ray.get(message_actor.get_and_clear_messages.remote())
+        print("New messages:", new_messages)
+        time.sleep(1)
 
 # This script prints something like the following:
 # New messages: []

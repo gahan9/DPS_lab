@@ -1,29 +1,52 @@
+#!/home/jarvis/.virtualenvs/ray/bin/python3
+# -*- coding: utf-8 -*-
+"""
+Author: Gahan Saraiya
+GiT: https://github.com/gahan9
+StackOverflow: https://stackoverflow.com/users/story/7664524
+
+Explicit Aggregation of addition function
+"""
+
 import ray
 import time
+import cProfile
 
 @ray.remote
 def add(x, y):
     time.sleep(1)
     return x + y
 
-# Aggregate the values slowly. This approach takes O(n) where n is the
-# number of values being aggregated. In this case, 7 seconds.
-id1 = add.remote(1, 2)
-id2 = add.remote(id1, 3)
-id3 = add.remote(id2, 4)
-id4 = add.remote(id3, 5)
-id5 = add.remote(id4, 6)
-id6 = add.remote(id5, 7)
-id7 = add.remote(id6, 8)
-result = ray.get(id7)
+def approach1():
+    """
+    Aggregate the values slowly. This approach takes O(n) where n is the
+    number of values being aggregated. In this case, 7 seconds.
+    """
+    id1 = add.remote(1, 2)
+    id2 = add.remote(id1, 3)
+    id3 = add.remote(id2, 4)
+    id4 = add.remote(id3, 5)
+    id5 = add.remote(id4, 6)
+    id6 = add.remote(id5, 7)
+    id7 = add.remote(id6, 8)
+    result = ray.get(id7)
+    return result
 
-# Aggregate the values in a tree-structured pattern. This approach
-# takes O(log(n)). In this case, 3 seconds.
-id1 = add.remote(1, 2)
-id2 = add.remote(3, 4)
-id3 = add.remote(5, 6)
-id4 = add.remote(7, 8)
-id5 = add.remote(id1, id2)
-id6 = add.remote(id3, id4)
-id7 = add.remote(id5, id6)
-result = ray.get(id7)
+def tree_approach():
+    """
+    Aggregate the values in a tree-structured pattern. This approach
+    takes O(log(n)). In this case, 3 seconds.
+    """
+    id1 = add.remote(1, 2)
+    id2 = add.remote(3, 4)
+    id3 = add.remote(5, 6)
+    id4 = add.remote(7, 8)
+    id5 = add.remote(id1, id2)
+    id6 = add.remote(id3, id4)
+    id7 = add.remote(id5, id6)
+    result = ray.get(id7)
+
+if __name__ == "__main__":
+    # Start Ray.
+    ray.init()
+    cProfile.run("approach1()")
