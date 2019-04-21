@@ -1,0 +1,6 @@
+Time Elapsed for Input Size 100: 2.0011
+Time Elapsed for Input Size 200: 2.8617
+Time Elapsed for Input Size 300: 5.8519
+Time Elapsed for Input Size 500: 28.4275
+Time Elapsed for Input Size 700: 77.6339
+Time Elapsed for Input Size 1000: 227.4916
