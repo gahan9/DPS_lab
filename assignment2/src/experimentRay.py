@@ -12,20 +12,21 @@ import ray
 
 @ray.remote
 def stress_function(num):
-    # Example of loop O(n^3)
-    return sum([i*j*k 
+    # Example of loop O(n^2)
+    return sum([i*j*1 
                 for i in range(num) 
-                for j in range(i) 
-                for k in range(j)
+                for j in range(num) 
+                for k in range(1)
     ])
 
 if __name__ == "__main__":
     # Initialize ray
     ray.init()
     # ray.init(redis_address="0.0.0.0:6667")
-
-    inp = int(input("Enter a number: "))
-    start = time.time()
-    # Remote function is invoked by .remote keyword
-    result = ray.get([stress_function.remote(inp) for _ in range(inp)])
-    print(time.time() - start)
+    # TEST_LIS = [100, 200, 300, 500]
+    TEST_LIS = [700, 1000]
+    for t in TEST_LIS:
+        start = time.time()
+        # Remote function is invoked by .remote keyword
+        result = ray.get([stress_function.remote(t) for _ in range(t)])
+        print("Time Elapsed for Input Size {}: {:.4f}".format(t, time.time() - start))
