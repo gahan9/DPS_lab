@@ -1,0 +1,192 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% Distributed Parallel System
+% Practical 5: Hybrid MPI and OpenMP
+%
+% Gahan M. Saraiya
+% 18MCEC10
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%       PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[paper=letter, fontsize=12pt]{article}
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+\usepackage{blindtext}
+\usepackage{graphicx} 
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{bbding}  % to use custom itemize font
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+\usepackage{titlesec} % Allows customization of titles
+
+%Importing csv as table
+\usepackage{csvsimple}
+
+\usepackage{makecell}
+\usepackage{longtable}
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+%----------------------------------------------------------------------------------------
+%       DATE FORMAT
+%----------------------------------------------------------------------------------------
+\usepackage{datetime}
+\newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
+%----------------------------------------------------------------------------------------
+
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+
+
+%----------------------------------------------------------------------------------------
+%       TITLE SECTION
+%----------------------------------------------------------------------------------------
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Practical 5: Hybrid MPI and OpenMP}} % Article title
+\author{
+\large
+{\textsc{Gahan Saraiya (18MCEC10)}}\\[2mm]
+%\thanks{A thank you or further information}\\ % Your name
+\normalsize \href{mailto:18mcec10@nirmauni.ac.in}{18mcec10@nirmauni.ac.in}\\[2mm] % Your email address
+}
+\date{}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+	pdfauthor={Gahan Saraiya},
+	pdfcreator={Gahan Saraiya},
+	pdfproducer={Gahan Saraiya},
+}
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+%       SET HEADER AND FOOTER
+%----------------------------------------------------------------------------------------
+\newcommand\theauthor{Gahan Saraiya}
+\newcommand\thesubject{Distributed Parallel System}
+\renewcommand{\footrulewidth}{0.4pt}% default is 0pt
+\fancyhead[C]{Institute of Technology, Nirma University $\bullet$ \monthyeardate\today} % Custom header text
+\fancyfoot[LE,LO]{\thesubject}
+\fancyfoot[RO,LE]{Page \thepage} % Custom footer text
+%----------------------------------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fourier} 
+\usepackage{array}
+\usepackage{makecell}
+
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
+\newcommand*\tick{\item[\Checkmark]}
+\newcommand*\arrow{\item[$\Rightarrow$]}
+\newcommand*\fail{\item[\XSolidBrush]}
+\usepackage{minted} % for highlighting code sytax
+\definecolor{LightGray}{gray}{0.9}
+
+\setminted[text]{
+	frame=lines, 
+	breaklines,
+	baselinestretch=1.2,
+	bgcolor=LightGray,
+%	fontsize=\small
+}
+
+\setminted[python]{
+	frame=lines, 
+	breaklines, 
+	linenos,
+	baselinestretch=1.2,
+%	bgcolor=LightGray,
+%	fontsize=\small
+}
+
+\setminted[c]{
+	frame=lines, 
+	breaklines, 
+	linenos,
+	baselinestretch=1.2,
+%	bgcolor=LightGray,
+%	fontsize=\small
+}
+
+\begin{document}
+\maketitle % Insert title
+\thispagestyle{fancy} % All pages have headers and footers
+
+\section{AIM}
+Demonstrating Hybrid \verb|MPI| and \verb|OpenMP| code.
+
+\section{Introduction}
+The goal is to demonstrate the hybrid \verb|OpenMP| and \verb|MPI| code for below configurations: 
+\begin{itemize}
+    \item 1 node and 1 core
+    \item 1 node and 4 cores
+    \item 2 nodes and 1 core
+    \item 2 nodes and 2 cores
+    \item 2 nodes and 4 cores
+\end{itemize}
+ 
+\section{Implementation}
+\inputminted{c}{../src/main.c}
+
+\section{Outputs}
+\subsection{Result for 1 node and 1 core}
+\inputminted[firstline=0,lastline=40]{text}{../src/output_1x1.txt}
+$ \vdots $
+\inputminted[firstline=3060,lastline=4002]{text}{../src/output_1x1.txt}
+
+\subsection{Result for 1 node and 4 core}
+\inputminted[firstline=0,lastline=40]{text}{../src/output_1x4.txt}
+$ \vdots $
+\inputminted[firstline=3060,lastline=4002]{text}{../src/output_1x4.txt}
+
+\subsection{Result for 2 node and 1 core}
+\inputminted[firstline=0,lastline=40]{text}{../src/output_2x1.txt}
+$ \vdots $
+\inputminted[firstline=3060,lastline=4002]{text}{../src/output_2x1.txt}
+
+\subsection{Result for 2 node and 2 core}
+\inputminted[firstline=0,lastline=40]{text}{../src/output_2x2.txt}
+$ \vdots $
+\inputminted[firstline=3060,lastline=4002]{text}{../src/output_2x2.txt}
+
+\subsection{Result for 2 node and 4 core}
+\inputminted[firstline=0,lastline=40]{text}{../src/output_2x4.txt}
+$ \vdots $
+\inputminted[firstline=3060,lastline=4002]{text}{../src/output_2x4.txt}
+
+
+\section{Conclusion}
+The result shows that by configuring hybrid parallel approach if the task is independent of individual work and there is no dependency in computation then such an embarrassingly parallel application can be used to implement with such kind of system where we can maximize the utilization of each processor core on each node.
+
+Note that if task has dependency than just to handle accuracy for it one can not achieve more performance as the expected parallelization performance can't be achieved.
+\end{document}
