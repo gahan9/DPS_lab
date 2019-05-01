@@ -1,0 +1,61 @@
+\section{Tuning and profiling}\label{section:proifiling}
+For the profiling I have implemented a simple code of $ O(n^2) $ as shown below:
+\begin{minted}{python}
+sum([i*j*1 
+    for i in range(n) 
+    for j in range(n) 
+    for k in range(1)
+])
+\end{minted}
+As you can see the code will compute multiplication of every permutation of $ n $ (integer number provided for computation) and then calculating sum of all these numbers.
+
+\subsection{Sequential Code}\label{subsec:sequential}
+\inputminted{python}{../src/experiment.py}\label{code:seq}
+
+\subsubsection{Output}
+\inputminted{text}{../src/outputNonRay.txt}
+
+
+\subsection{Parallel Code}\label{subsec:parallel}
+Below is the implementation of parallel code with single node and 4 cores: 
+\inputminted{python}{../src/experimentRay.py}\label{code:parallel}
+
+\subsubsection{Output}
+\inputminted{text}{../src/outputRay.txt}
+
+
+\section{Summarizing Performance}
+As you can see in the code implemented in section \ref{section:proifiling}.\ref{subsec:sequential}.\ref{code:seq} is sequential and the amount of time (in seconds) is increased by the number of iterations.
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{| l | p{4cm} | p{4cm} |}%
+        \hline
+        \bfseries Number of Data ($ n $)
+        & \bfseries Sequential code [\ref{section:proifiling}.\ref{subsec:sequential}.\ref{code:seq}] execution (in seconds)
+        & \bfseries Parallel code [\ref{section:proifiling}.\ref{subsec:parallel}.\ref{code:parallel}] execution (in seconds) (with \textit{1 node and 4 cores}) 
+        \csvreader{../src/observation.csv}{}% use head of csv as column names
+        {
+            \\ \hline
+            \csvcoli 
+            &\csvcolii
+            &\csvcoliii
+        }
+        \\ \hline
+    \end{tabular}
+    
+    \caption{result of observation (Note that due to limitation of resources the code can not be executed with more than one nodes)}\label{table:observations}
+%    \medskip
+%    \small
+%    \begin{itemize}
+%        \item Here chunk size $ -1 $ represents that no chunk size specified in command 
+%        \item $ 100 $ is specified as number of fixed chunk
+%        \item $ 250000 $ is the value derived by $ \frac{\text{size of array}}{\text{number of threads}} $
+%    \end{itemize}
+\end{table}
+
+As observed in result (refer Table \ref{table:observations}) for small data chunk size the overhead observed with Ray implementation, however as data size increases, gradually speedup observed is increased and the parallel version is able to complete the same task can be completed lot quicker.
+
+
+Various other Tuning implementation with Ray are available at \url{https://github.com/gahan9/ray/tree/master/python/ray/tune/examples}.
